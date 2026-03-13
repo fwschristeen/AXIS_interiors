@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:j2seproject1="http://www.netbeans.org/ns/j2se-project/1"
+         xmlns:j2seproject3="http://www.netbeans.org/ns/j2se-project/3"
+         xmlns:jaxrpc="http://www.netbeans.org/ns/j2se-project/jax-rpc"
+         basedir=".."
+         default="default"
+         name="FurnitureVision-impl">
+
+    <target name="default" depends="jar" description="Build and jar the project."/>
+
+    <target name="-pre-init">
+        <!-- Empty placeholder -->
+    </target>
+
+    <target name="-init-private" depends="-pre-init">
+        <property file="nbproject/private/private.properties"/>
+    </target>
+
+    <target name="-init-user" depends="-init-private">
+        <property file="${user.properties.file}"/>
+    </target>
+
+    <target name="-init-project" depends="-init-user">
+        <property file="nbproject/project.properties"/>
+    </target>
+
+    <target name="-init-macrodef-property">
+        <!-- Empty placeholder -->
+    </target>
+
+    <target name="init" depends="-init-project,-init-macrodef-property">
+        <mkdir dir="${build.classes.dir}"/>
+    </target>
+
+    <target name="-pre-compile">
+        <!-- Empty placeholder -->
+    </target>
+
+    <target name="compile" depends="init,-pre-compile" description="Compile project.">
+        <javac srcdir="${src.dir}"
+               destdir="${build.classes.dir}"
+               source="${javac.source}"
+               target="${javac.target}"
+               includeantruntime="false"
+               encoding="${source.encoding}">
+            <classpath>
+                <pathelement path="${javac.classpath}"/>
+            </classpath>
+        </javac>
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${src.dir}" excludes="${build.classes.excludes}"/>
+        </copy>
+    </target>
+
+    <target name="jar" depends="compile" description="Build JAR.">
+        <mkdir dir="${dist.dir}"/>
+        <jar destfile="${dist.jar}" basedir="${build.classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+                <attribute name="Class-Path" value="lib/sqlite-jdbc-3.45.1.0.jar"/>
+            </manifest>
+        </jar>
+        <copy todir="${dist.dir}/lib">
+            <fileset dir="lib"/>
+        </copy>
+    </target>
+
+    <target name="run" depends="compile" description="Run the project.">
+        <java classname="${main.class}" fork="true" failonerror="true">
+            <classpath>
+                <pathelement path="${run.classpath}"/>
+            </classpath>
+            <jvmarg line="${run.jvmargs}"/>
+        </java>
+    </target>
+
+    <target name="clean" description="Clean build products.">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+    <target name="javadoc" depends="init" description="Build Javadoc.">
+        <mkdir dir="${dist.javadoc.dir}"/>
+        <javadoc destdir="${dist.javadoc.dir}" source="${javac.source}" encoding="${source.encoding}">
+            <classpath>
+                <pathelement path="${javac.classpath}"/>
+            </classpath>
+            <sourcepath>
+                <pathelement path="${src.dir}"/>
+            </sourcepath>
+        </javadoc>
+    </target>
+
+</project>
