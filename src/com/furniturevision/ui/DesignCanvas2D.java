@@ -883,30 +883,14 @@ public class DesignCanvas2D extends JPanel {
             }
 
             if (design == null) {
-                // Welcome prompt
                 int cx = getWidth() / 2;
                 int cy = getHeight() / 2;
 
-                // Icon
-                g2.setColor(ThemeManager.accent());
-                g2.setFont(new Font("Segoe UI", Font.PLAIN, 48));
-                FontMetrics fm = g2.getFontMetrics();
-                String icon = "✦";
-                g2.drawString(icon, cx - fm.stringWidth(icon) / 2, cy - 40);
-
-                // Title
-                g2.setColor(ThemeManager.textPrimary());
-                g2.setFont(ModernUI.FONT_SUBTITLE);
-                fm = g2.getFontMetrics();
-                String msg = "Welcome to AXIS Interiors";
-                g2.drawString(msg, cx - fm.stringWidth(msg) / 2, cy + 10);
-
-                // Subtitle
                 g2.setColor(ThemeManager.textMuted());
                 g2.setFont(ModernUI.FONT_BODY);
-                fm = g2.getFontMetrics();
-                msg = "Use \"New Design\" to create a room, or \"My Designs\" to open one";
-                g2.drawString(msg, cx - fm.stringWidth(msg) / 2, cy + 40);
+                FontMetrics fm = g2.getFontMetrics();
+                String msg = "Use \"New Design\" to create a room, or \"My Designs\" to open one";
+                g2.drawString(msg, cx - fm.stringWidth(msg) / 2, cy);
 
                 g2.dispose();
                 return;

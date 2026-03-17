@@ -28,6 +28,8 @@ public class AdminPanel extends JPanel {
     private CatalogTableModel tableModel;
     private JLabel statusLabel;
     private JLabel countLabel;
+    private JScrollPane scrollPane;
+    private JLabel titleLabel;
 
     // Theme-aware row helpers
     private static Color rowEven()     { return ThemeManager.isDark() ? new Color(30, 32, 42)  : new Color(255, 255, 255); }
@@ -55,6 +57,7 @@ public class AdminPanel extends JPanel {
         setBackground(ThemeManager.bgPrimary());
         setLayout(new BorderLayout());
         initComponents();
+        ThemeManager.addChangeListener(this::updateTheme);
     }
 
     private void initComponents() {
@@ -78,7 +81,7 @@ public class AdminPanel extends JPanel {
         header.setBorder(new EmptyBorder(14, 24, 14, 24));
 
         // Title
-        JLabel titleLabel = new JLabel("🪑  Furniture Catalog") {
+        titleLabel = new JLabel("🪑  Furniture Catalog") {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 ModernUI.enableAntiAliasing(g2);
@@ -130,7 +133,7 @@ public class AdminPanel extends JPanel {
         table = new JTable(tableModel);
         configureTable();
 
-        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(rowEven());
         scrollPane.setBackground(rowEven());
@@ -188,6 +191,23 @@ public class AdminPanel extends JPanel {
 
         // Load data
         refreshTable();
+    }
+
+    private void updateTheme() {
+        setBackground(ThemeManager.bgPrimary());
+        if (scrollPane != null) {
+            scrollPane.getViewport().setBackground(rowEven());
+            scrollPane.setBackground(rowEven());
+        }
+        if (table != null) {
+            table.setBackground(rowEven());
+            table.setForeground(ThemeManager.textPrimary());
+            table.setGridColor(gridLine());
+            table.setSelectionBackground(rowSelected());
+            table.setSelectionForeground(ThemeManager.textPrimary());
+            table.getTableHeader().repaint();
+            table.repaint();
+        }
     }
 
     // ===========================

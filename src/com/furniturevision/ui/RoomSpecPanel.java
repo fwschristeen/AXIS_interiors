@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Panel for entering room specifications to create a new design.
@@ -26,6 +28,11 @@ public class RoomSpecPanel extends JPanel {
     private JButton floorColorBtn;
     private JTextArea notesArea;
 
+    private JLabel titleLabel;
+    private JLabel descLabel;
+    private List<JLabel> fieldLabels = new ArrayList<>();
+    private JScrollPane scrollPane;
+
     private Color selectedWallColor = new Color(230, 225, 215);
     private Color selectedFloorColor = new Color(180, 150, 120);
 
@@ -34,6 +41,7 @@ public class RoomSpecPanel extends JPanel {
         setBackground(ThemeManager.bgPrimary());
         setLayout(new GridBagLayout());
         initComponents();
+        ThemeManager.addChangeListener(this::updateTheme);
     }
 
     private void initComponents() {
@@ -49,9 +57,9 @@ public class RoomSpecPanel extends JPanel {
         headerCard.setLayout(new BoxLayout(headerCard, BoxLayout.Y_AXIS));
         headerCard.setBorder(new EmptyBorder(30, 30, 30, 30));
 
-        JLabel titleLabel = ModernUI.createLabel("Create New Room Design", ModernUI.FONT_TITLE, ThemeManager.textPrimary());
+        titleLabel = ModernUI.createLabel("Create New Room Design", ModernUI.FONT_TITLE, ThemeManager.textPrimary());
         titleLabel.setAlignmentX(LEFT_ALIGNMENT);
-        JLabel descLabel = ModernUI.createLabel("Enter the room specifications to begin your design", ModernUI.FONT_BODY, ThemeManager.textSecondary());
+        descLabel = ModernUI.createLabel("Enter the room specifications to begin your design", ModernUI.FONT_BODY, ThemeManager.textSecondary());
         descLabel.setAlignmentX(LEFT_ALIGNMENT);
 
         headerCard.add(titleLabel);
@@ -220,7 +228,7 @@ public class RoomSpecPanel extends JPanel {
         formContainer.add(createBtn);
         formContainer.add(Box.createVerticalStrut(30));
 
-        JScrollPane scrollPane = ModernUI.createScrollPane(formContainer);
+        scrollPane = ModernUI.createScrollPane(formContainer);
         scrollPane.getViewport().setBackground(ThemeManager.bgPrimary());
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -251,6 +259,7 @@ public class RoomSpecPanel extends JPanel {
     private JLabel createFieldLabel(String text) {
         JLabel label = ModernUI.createLabel(text, ModernUI.FONT_SMALL, ThemeManager.textSecondary());
         label.setAlignmentX(LEFT_ALIGNMENT);
+        fieldLabels.add(label);
         return label;
     }
 
@@ -261,6 +270,7 @@ public class RoomSpecPanel extends JPanel {
 
         JLabel lbl = ModernUI.createLabel(label, ModernUI.FONT_SMALL, ThemeManager.textSecondary());
         lbl.setAlignmentX(LEFT_ALIGNMENT);
+        fieldLabels.add(lbl);
 
         JSpinner spinner = ModernUI.createSpinner(defaultValue, 1.0, 30.0, 0.1);
         spinner.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
@@ -315,6 +325,62 @@ public class RoomSpecPanel extends JPanel {
         btn.setContentAreaFilled(false);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return btn;
+    }
+
+    private void updateTheme() {
+        setBackground(ThemeManager.bgPrimary());
+        if (titleLabel != null) titleLabel.setForeground(ThemeManager.textPrimary());
+        if (descLabel != null) descLabel.setForeground(ThemeManager.textSecondary());
+        for (JLabel lbl : fieldLabels) {
+            lbl.setForeground(ThemeManager.textSecondary());
+        }
+        if (roomNameField != null) {
+            roomNameField.setBackground(ThemeManager.fieldBg());
+            roomNameField.setForeground(ThemeManager.textPrimary());
+            roomNameField.setBorder(BorderFactory.createCompoundBorder(
+                new ModernUI.RoundedBorder(ModernUI.FIELD_RADIUS, ThemeManager.fieldBorder()),
+                new EmptyBorder(8, 12, 8, 12)
+            ));
+        }
+        if (customerNameField != null) {
+            customerNameField.setBackground(ThemeManager.fieldBg());
+            customerNameField.setForeground(ThemeManager.textPrimary());
+            customerNameField.setBorder(BorderFactory.createCompoundBorder(
+                new ModernUI.RoundedBorder(ModernUI.FIELD_RADIUS, ThemeManager.fieldBorder()),
+                new EmptyBorder(8, 12, 8, 12)
+            ));
+        }
+        if (shapeCombo != null) {
+            shapeCombo.setBackground(ThemeManager.fieldBg());
+            shapeCombo.setForeground(ThemeManager.textPrimary());
+            shapeCombo.setBorder(new ModernUI.RoundedBorder(ModernUI.FIELD_RADIUS, ThemeManager.fieldBorder()));
+        }
+        if (widthSpinner != null) {
+            updateSpinnerTheme(widthSpinner);
+            updateSpinnerTheme(depthSpinner);
+            updateSpinnerTheme(heightSpinner);
+        }
+        if (notesArea != null) {
+            notesArea.setBackground(ThemeManager.bgTertiary());
+            notesArea.setForeground(ThemeManager.textPrimary());
+        }
+        if (scrollPane != null) {
+            scrollPane.getViewport().setBackground(ThemeManager.bgPrimary());
+            scrollPane.setBackground(ThemeManager.bgPrimary());
+        }
+    }
+
+    private void updateSpinnerTheme(JSpinner spinner) {
+        if (spinner == null) return;
+        spinner.setBackground(ThemeManager.fieldBg());
+        spinner.setForeground(ThemeManager.textPrimary());
+        spinner.setBorder(new ModernUI.RoundedBorder(ModernUI.FIELD_RADIUS, ThemeManager.fieldBorder()));
+        JComponent editor = spinner.getEditor();
+        if (editor instanceof JSpinner.DefaultEditor) {
+            JTextField tf = ((JSpinner.DefaultEditor) editor).getTextField();
+            tf.setBackground(ThemeManager.fieldBg());
+            tf.setForeground(ThemeManager.textPrimary());
+        }
     }
 
     /**

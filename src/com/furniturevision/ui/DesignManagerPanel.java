@@ -19,12 +19,16 @@ public class DesignManagerPanel extends JPanel {
 
     private DashboardFrame dashboard;
     private JPanel cardsContainer;
+    private JLabel titleLabel;
+    private JLabel subtitleLabel;
+    private JScrollPane scrollPane;
 
     public DesignManagerPanel(DashboardFrame dashboard) {
         this.dashboard = dashboard;
         setBackground(ThemeManager.bgPrimary());
         setLayout(new BorderLayout());
         initComponents();
+        ThemeManager.addChangeListener(this::updateTheme);
     }
 
     private void initComponents() {
@@ -34,8 +38,8 @@ public class DesignManagerPanel extends JPanel {
         header.setLayout(new BorderLayout());
         header.setBorder(new EmptyBorder(24, 30, 16, 30));
 
-        JLabel titleLabel = ModernUI.createLabel("My Designs", ModernUI.FONT_TITLE, ThemeManager.textPrimary());
-        JLabel subtitleLabel = ModernUI.createLabel("Manage your saved room designs", ModernUI.FONT_BODY, ThemeManager.textSecondary());
+        titleLabel = ModernUI.createLabel("My Designs", ModernUI.FONT_TITLE, ThemeManager.textPrimary());
+        subtitleLabel = ModernUI.createLabel("Manage your saved room designs", ModernUI.FONT_BODY, ThemeManager.textSecondary());
 
         JPanel headerText = new JPanel();
         headerText.setOpaque(false);
@@ -44,8 +48,33 @@ public class DesignManagerPanel extends JPanel {
         headerText.add(Box.createVerticalStrut(4));
         headerText.add(subtitleLabel);
 
-        JButton refreshBtn = ModernUI.createButton("↻ Refresh", ThemeManager.surface());
+        JButton refreshBtn = new JButton("↻ Refresh") {
+            private boolean hovering = false;
+            {
+                addMouseListener(new MouseAdapter() {
+                    @Override public void mouseEntered(MouseEvent e) { hovering = true; repaint(); }
+                    @Override public void mouseExited(MouseEvent e)  { hovering = false; repaint(); }
+                });
+            }
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                ModernUI.enableAntiAliasing(g2);
+                Color bg = hovering ? ModernUI.brighter(ThemeManager.surface(), 25) : ThemeManager.surface();
+                g2.setColor(bg);
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), ModernUI.BUTTON_RADIUS, ModernUI.BUTTON_RADIUS));
+                g2.setFont(ModernUI.FONT_BUTTON);
+                FontMetrics fm = g2.getFontMetrics();
+                g2.setColor(ThemeManager.textPrimary());
+                g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                g2.dispose();
+            }
+        };
         refreshBtn.setPreferredSize(new Dimension(100, 36));
+        refreshBtn.setFocusPainted(false);
+        refreshBtn.setBorderPainted(false);
+        refreshBtn.setContentAreaFilled(false);
+        refreshBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         refreshBtn.addActionListener(e -> refreshDesigns());
 
         header.add(headerText, BorderLayout.WEST);
@@ -57,11 +86,24 @@ public class DesignManagerPanel extends JPanel {
         cardsContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
         cardsContainer.setBorder(new EmptyBorder(10, 30, 30, 30));
 
-        JScrollPane scrollPane = ModernUI.createScrollPane(cardsContainer);
+        scrollPane = ModernUI.createScrollPane(cardsContainer);
         scrollPane.getViewport().setBackground(ThemeManager.bgPrimary());
 
         add(header, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private void updateTheme() {
+        setBackground(ThemeManager.bgPrimary());
+        if (titleLabel != null) titleLabel.setForeground(ThemeManager.textPrimary());
+        if (subtitleLabel != null) subtitleLabel.setForeground(ThemeManager.textSecondary());
+        if (scrollPane != null) {
+            scrollPane.getViewport().setBackground(ThemeManager.bgPrimary());
+            scrollPane.setBackground(ThemeManager.bgPrimary());
+        }
+        if (cardsContainer != null) {
+            cardsContainer.repaint();
+        }
     }
 
     /**
